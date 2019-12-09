@@ -9,7 +9,7 @@ use {
 };
 
 pub fn generate_cli<'a, 'b>() -> App<'a, 'b> {
-    App::new("httpd")
+    App::new("blog-serve")
         .author(crate_authors!("\n"))
         .version(crate_version!())
         /* .arg(
