@@ -35,6 +35,8 @@ stages:
           vmImage: ubuntu-16.04
         steps:
           - template: rust/internal/install.yml@templates
+            parameters:
+              rust: stable
           - script: cargo build
           - task: CopyFiles@2
             inputs:
