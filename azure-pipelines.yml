@@ -11,6 +11,7 @@ stages:
           all_features: true
   - stage: clippy_check
     displayName: Clippy check
+    dependsOn: []
     jobs:
       - template: rust/clippy.yml@templates
         parameters:
@@ -18,6 +19,7 @@ stages:
           allow_fail: true
   - stage: cargo_testing
     displayName: Cargo test(s)
+    dependsOn: compilation_check
     jobs:
       - template: rust/test.yml@templates
         parameters:
@@ -30,22 +32,10 @@ stages:
   - stage: build_publish
     displayName: Build & publish binary
     jobs:
-      - job:
-        pool:
-          vmImage: ubuntu-16.04
-        steps:
-          - template: rust/internal/install.yml@templates
-            parameters:
-              rust: stable
-          - script: cargo build
-          - task: CopyFiles@2
-            inputs:
-              Contents: |
-                target/*/*
-                !target/*/*.d
-              TargetFolder: '$(Build.ArtifactStagingDirectory)'
-          - publish: $(Build.ArtifactStagingDirectory)
-            artifact: blog-serve
+      - template: rust/publish.yml@templates
+        parameters:
+          rust: stable
+          artifact: 'blog-serve'
 
 resources:
   repositories:
