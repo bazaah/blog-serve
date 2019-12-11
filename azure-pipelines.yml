@@ -16,6 +16,34 @@ stages:
         parameters:
           rust: stable
           allow_fail: true
+  - stage: cargo_testing
+    displayName: Cargo test(s)
+    jobs:
+      - template: rust/test.yml@templates
+        parameters:
+          rust: stable
+          id: stable
+          cross: false
+          allow_fail: false
+          test_list:
+            - "--all"
+  - stage: build_publish
+    displayName: Build & publish binary
+    jobs:
+      - job:
+        pool:
+          vmImage: ubuntu-16.04
+        steps:
+          - template: rust/internal/install.yml@templates
+          - script: cargo build
+          - task: CopyFiles@2
+            inputs:
+              Contents: |
+                target/*/*
+                !target/*/*.d
+              TargetFolder: '$(Build.ArtifactStagingDirectory)'
+          - publish: $(Build.ArtifactStagingDirectory)
+            artifact: blog-serve
 
 resources:
   repositories:
