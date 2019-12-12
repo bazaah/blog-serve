@@ -51,7 +51,7 @@ stages:
               flattenFolders: true
             displayName: Copy files to staging
           - publish: '$(Build.ArtifactStagingDirectory)'
-            name: static
+            artifact: static
             displayName: Publish staging
 
 resources:
