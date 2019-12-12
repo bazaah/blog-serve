@@ -1,6 +1,9 @@
 trigger:
 - master
 
+pool:
+  vmImage: ubuntu-latest
+
 stages:
   - stage: compilation_check
     displayName: Compilation check
@@ -36,6 +39,20 @@ stages:
         parameters:
           rust: stable
           artifact: 'blog-serve'
+  - stage: static_content
+    displayName: Publish static files
+    jobs:
+      - job: static_publish
+        steps:
+          - task: CopyFiles@2
+            inputs:
+              Contents: 'static/*'
+              TargetFolder: '$(Build.ArtifactStagingDirectory)'
+              flattenFolders: true
+            displayName: Copy files to staging
+          - publish: '$(Build.ArtifactStagingDirectory)'
+            name: static
+            displayName: Publish staging
 
 resources:
   repositories:
